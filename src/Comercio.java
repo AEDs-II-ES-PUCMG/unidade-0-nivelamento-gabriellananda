@@ -139,7 +139,48 @@ public class Comercio {
     Factory Method para criação dos objetos.
     */
     static void cadastrarProduto(){
-        //TO DO
+        cabecalho();
+
+        if(quantosProdutos >= produtosCadastrados.length){
+            System.out.println("Limite de produtos atingido!");
+            return;
+        }
+
+        System.out.println("1 - Produto não perecível");
+        System.out.println("2 - Produto perecível");
+        System.out.print("Tipo do produto: ");
+
+        int tipo = Integer.parseInt(teclado.nextLine());
+
+        System.out.print("Descrição: ");
+        String descricao = teclado.nextLine();
+
+        System.out.print("Preço de custo: ");
+        double preco = Double.parseDouble(teclado.nextLine());
+
+        System.out.print("Margem de lucro: ");
+        double margem = Double.parseDouble(teclado.nextLine());
+
+        Produto novoProduto = null;
+
+        if(tipo == 1){
+            novoProduto = new ProdutoNaoPerecivel(descricao, preco, margem);
+        }
+        else if(tipo == 2){
+
+            System.out.print("Data de validade (dd/MM/yyyy): ");
+            String dataTexto = teclado.nextLine();
+
+            DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            LocalDate validade = LocalDate.parse(dataTexto, formato);
+
+            novoProduto = new ProdutoPerecivel(descricao, preco, margem, validade);
+        }
+
+        produtosCadastrados[quantosProdutos] = novoProduto;
+        quantosProdutos++;
+
+        System.out.println("Produto cadastrado com sucesso!");
     }
 
     /**
@@ -148,8 +189,21 @@ public class Comercio {
     * @param nomeArquivo Nome do arquivo a ser gravado.
     */
     public static void salvarProdutos(String nomeArquivo){
-        //TO DO
+        try{
+            FileWriter arquivo = new FileWriter(nomeArquivo);
+
+            arquivo.write(quantosProdutos + "\n");
+
+            for(int i = 0; i < quantosProdutos; i++){
+                arquivo.write(produtosCadastrados[i].gerarDadosTexto() + "\n");
+            }
+            arquivo.close();
+        }
+        catch(IOException e){
+            System.out.println("Erro ao salvar arquivo!");
+        }
     }
+
     public static void main(String[] args) throws Exception {
         teclado = new Scanner(System.in, Charset.forName("ISO-8859-2"));
         nomeArquivoDados = "dadosProdutos.csv";
